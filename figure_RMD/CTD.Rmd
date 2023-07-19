@@ -1,0 +1,100 @@
+---
+title: "CTD"
+author: "ChuehChenTung"
+date: '2023-03-27'
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+knitr::opts_chunk$set(fig.width=18, fig.height=12) 
+```
+
+<font size="4"> 
+**Caption:**
+Light transmission profile for each cruise of the two sites. A very low light transmission below 200 meter depth in almost all the sampling cruises in GC1. 
+</font>
+```{r}
+rm(list=ls())
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+GPSC_CTD<- read_excel("CTD.xlsx")
+
+# Set negtive transmissometer to zero
+GPSC_CTD$transmissometer[GPSC_CTD$transmissometer<=0] <- 0 
+
+#filter only downward data
+GC1<-GPSC_CTD %>%filter(Station=="GC1") %>% 
+  group_split(Cruise)
+GC1_CTD<-NULL
+for (i in 1:11) { 
+  out<-filter(GC1[[i]],!duplicated(GC1[[i]]$pressure,)==T)
+  GC1_CTD<-rbind(GC1_CTD,out)
+} 
+
+GS1<-GPSC_CTD %>%filter(Station=="GS1") %>% 
+  group_split(Cruise)
+GS1_CTD<-NULL
+for (i in 1:10) { 
+  out<-filter(GS1[[i]],!duplicated(GS1[[i]]$pressure,)==T)
+  GS1_CTD<-rbind(GS1_CTD,out)
+} 
+
+GC1GS1<-rbind(GC1_CTD,GS1_CTD)
+#plot 
+ggplot(data=GC1GS1, aes(x=transmissometer, y=pressure, colour=Station))+
+  geom_point(size=0.5)+
+  scale_y_reverse()+
+  scale_color_brewer(palette = "Set2")+
+  xlab("Transmissivity(%)")+
+  ylab("Depth(m)")+
+  facet_wrap(~Cruise, scale="free")+
+  theme_base()+
+  guides(color = guide_legend(override.aes = list(size = 3) ) )+
+  theme(legend.text = element_text(size = 15))
+ggsave("CTD_trans.png",width = 12, height =9)
+```
+
+<font size="4"> 
+Calculation of bottom water temperature
+</font>
+```{r}
+rm(list=ls())
+library(knitr)
+GPSC_CTD<- read_excel("CTD.xlsx")
+#GC1
+GC1_CTD<-as.data.frame(GPSC_CTD %>%
+                         filter(Station=="GC1"))
+GC1_CTD<-split(GC1_CTD,GC1_CTD$Cruise)
+#GS1
+GS1_CTD<-as.data.frame(GPSC_CTD %>%
+                         filter(Station=="GS1"))
+GS1_CTD<-split(GS1_CTD,GS1_CTD$Cruise)
+#average deepest 3 data = bottom water
+deep_fun <- function(x) {
+  dat <- x[order(x$pressure, decreasing=TRUE)[1:3],]
+}
+GC1_CTD<- lapply(GC1_CTD, FUN=deep_fun) 
+GC1_CTD<-do.call("rbind", GC1_CTD)
+GS1_CTD<- lapply(GS1_CTD, FUN=deep_fun) 
+GS1_CTD<-do.call("rbind", GS1_CTD)
+
+# Average temperature, sigma_theta and density
+GC1_CTD$Temperature <- rowMeans(GC1_CTD[, c("temperature_T1", "temperature_T2")], na.rm=TRUE)
+GC1T<-mean(GC1_CTD$Temperature)
+GS1_CTD$Temperature <- rowMeans(GS1_CTD[, c("temperature_T1", "temperature_T2")], na.rm=TRUE)
+GS1T<-mean(GS1_CTD$Temperature)
+
+#Tlim calculation####
+#Q10=2 
+GC1Tlim<-2* exp((GC1T-20)/10)
+GS1Tlim<-2* exp((GS1T-20)/10)
+
+df<-data.frame(Station=c("GC1","GS1"),
+               Temp=c(GC1T,GS1T),
+               Tlim=c(GC1Tlim,GS1Tlim))
+kable(df, align = 'c',
+      col.names = c('Station', 'Temp(℃)', 'Tlim') )
+```
