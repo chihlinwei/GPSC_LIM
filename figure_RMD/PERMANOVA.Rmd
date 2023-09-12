@@ -21,7 +21,7 @@ rm(list = ls())
 library(readxl)
 library(vegan)
 library(dplyr)
-SED<-read_xlsx("SEDstock.xlsx")
+SED<-read_xlsx("raw/SEDstock.xlsx")
 GC1<-SED %>% filter(Station=="GC1") %>% data.frame()
 GS1<-SED %>% filter(Station=="GS1") %>% data.frame()
 
@@ -95,7 +95,7 @@ permanova_sed
 
 ```{r}
 rm(list = ls())
-BAC<-read_xlsx("BAC.xlsx")
+BAC<-read_xlsx("raw/BAC.xlsx")
 set.seed(100)
 #check variance:PERMDISP####
 #1 calculate distance
@@ -172,8 +172,7 @@ permanova_mac
 rm(list = ls())
 library(readxl)
 library(dplyr)
-Mei<-read_xlsx("meio_biomass.xlsx")
-Mei<-read_xlsx("meio_biomass.xlsx")
+Mei<-read_xlsx("raw/meio_biomass.xlsx")
 Mei$Season[Mei$Cruise=="OR1_1114"]<-"SU"
 Mei$Season[Mei$Cruise=="OR1_1126"]<-"AU"
 Mei$Season[Mei$Cruise=="OR1_1128"]<-"SP"
@@ -215,7 +214,7 @@ permanova_mei
 rm(list = ls())
 library(readxl)
 library(dplyr)
-TOU<-read_xlsx("TOU.xlsx")
+TOU<-read_xlsx("raw/TOU.xlsx")
 #calculation: from In_situ_DO_flux (mmol O2/m2/d) to carbon unit(mg C/m2/d)
 #respiratory quotient (RQ) of 0.85 (Rowe et al., 2008) (ratio of CO2 produced per O2 consumed)
 #C:O2= 0.85 = 1 mmolO2 -> 0.85 mmolC  
@@ -253,7 +252,7 @@ permanova_TOU
 rm(list = ls())
 library(readxl)
 library(dplyr)
-DOU<-read_xlsx("DOU.xlsx")
+DOU<-read_xlsx("raw/DOU.xlsx")
 #nmol/cm2/s -> mmol/m2/d
 #1e4*3600*24/1e6 = 864
 #calculation: from In_situ_DO_flux (mmol O2/m2/d) to carbon unit(mg C/m2/d)
@@ -292,7 +291,7 @@ permanova_DOU
 rm(list = ls())
 library(readxl)
 library(dplyr)
-BOU<-read_xlsx("BOU.xlsx")
+BOU<-read_xlsx("raw/BOU.xlsx")
 BOU$C<-BOU$BMU*(-1)*0.85*12
 BOU$O2<-BOU$BMU*(-1)
 BOU<-BOU %>% filter(C>0 & O2>0)

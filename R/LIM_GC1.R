@@ -3,8 +3,9 @@ rm(list=ls())
 library(LIM)
 library(splus2R)
 #MODEL SETUP####
+
 #-- Define directory that contains the input file
-DataDir <- "C:/Users/sarah/Downloads/LIM_GPSC_P/for_pub/RMD/"
+DataDir <- "GPSC_LIM/R/"
 #-- Read the ascii files
 File<- paste(DataDir,"GC1.input",sep="")  
 LIM<- Setup(file=File) 
@@ -24,6 +25,7 @@ Flowmatrix(LIM)
 
 #Likelihood####
 #-- SSA is not based on ecological theory
+#running this section will generate a different set of solution####
 xranges<-Xranges(LIM)
 x0 <- lsei(E=LIM$A,
            F=LIM$B,
@@ -42,8 +44,7 @@ xs <- xsample(E    = LIM$A,
               iter = iter)
 nameoutput <- "GC1_10000_50.Rdata" #name_iter_size
 save(xs, LIM, file=nameoutput)
-
-#check#### 
+#CHECK#### 
 #1) if the number of iterations is high enough to produces convergence of mean and sd
 #2) if the range of sampled values cover the range of possible solutions.
 #advice: examine a couple of flows(3 or so) of different magnitudes

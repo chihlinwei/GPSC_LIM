@@ -24,13 +24,13 @@ library(LIM)
 library(splus2R)
 #MODEL SETUP####
 #-- Define directory that contains the input file
-DataDir <- "C:/Users/sarah/Downloads/LIM_GPSC_P/for_pub/RMD/supplementary material/RMD"
+DataDir <- "GPSC_LIM/figure_RMD"
 #GC1####
-load(file="GC1_10000_50_new.Rdata")
+load(file="GC1_10000_50.Rdata")
 GC1_LIM<-LIM
 GC1_xs<-xs
 #GS1####
-load(file="GS1_10000_50_new.Rdata")
+load(file="GS1_10000_50.Rdata")
 GS1_LIM<-LIM
 GS1_xs<-xs
 

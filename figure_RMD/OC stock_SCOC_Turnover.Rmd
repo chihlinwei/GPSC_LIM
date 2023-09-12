@@ -31,7 +31,7 @@ library(kableExtra)
 library(cowplot)
 
 #####SED#####
-SED<-read_xlsx("SEDstock.xlsx")
+SED<-read_xlsx("raw/SEDstock.xlsx")
 GC1<-SED %>% filter(Station=="GC1") %>% data.frame()
 GS1<-SED %>% filter(Station=="GS1") %>% data.frame()
 
@@ -148,7 +148,7 @@ plot_sed<-Season%>%
   geom_point(data=SEDsum,aes(x=Season,y=OC), color = "darkblue",size=2,
              position = position_jitter(0.1))
 #####BAC#####
-BAC<-read_xlsx("BAC.xlsx")
+BAC<-read_xlsx("raw/BAC.xlsx")
 
 ana_text1 <- data.frame(
   label = "Habitat p=0.0005",
@@ -183,7 +183,7 @@ plot_bac<-df_bac%>%
              position = position_jitter(0.1))
 #####MEI#####
 
-Mei<-read_xlsx("meio_biomass.xlsx")
+Mei<-read_xlsx("raw/meio_biomass.xlsx")
 Mei$Season[Mei$Cruise=="OR1_1114"]<-"SU"
 Mei$Season[Mei$Cruise=="OR1_1126"]<-"AU"
 Mei$Season[Mei$Cruise=="OR1_1128"]<-"SP"
@@ -246,7 +246,7 @@ plot_mei<-byseason%>%
 
 #####MAC#####
 
-MAC<-read_xlsx("macro_biomass.xlsx")
+MAC<-read_xlsx("raw/macro_biomass.xlsx")
 
 #outlier
 MAC_out<-MAC #including outlier
@@ -391,7 +391,7 @@ No significant difference between seasons and habitats from PERMANOVA results.
 
 </font>
 ```{r}
-TOU<-read_xlsx("TOU.xlsx")
+TOU<-read_xlsx("raw/TOU.xlsx")
 #calculation: from In_situ_DO_flux (mmol O2/m2/d) to carbon unit(mg C/m2/d)
 #respiratory quotient (RQ) of 0.85 (Rowe et al., 2008) (ratio of CO2 produced per O2 consumed)
 #C:O2= 0.85 = 1 mmolO2 -> 0.85 mmolC  
@@ -544,7 +544,7 @@ DOU_plot <-dfDOU%>%
   geom_point(data=DOU,aes(x=Season,y=C), color = "darkblue",size=2,
              position = position_jitter(0.1))
 
-BOU<-read_xlsx("BOU.xlsx")
+BOU<-read_xlsx("raw/BOU.xlsx")
 BOU$C<-BOU$BMU*(-1)*0.85*12
 BOU$O2<-BOU$BMU*(-1)
 GC1<-BOU %>% filter(Station=="GC1") %>% filter(!is.na(O2)&!is.na(C)) %>% filter(C>0)
@@ -651,11 +651,11 @@ Stock turnover (unit: year or day) calculated with the two different estimations
 library(LIM)
 library(splus2R)
 #GC1####
-load(file="GC1_10000_50_new.Rdata")
+load(file="GC1_10000_50.Rdata")
 GC1_LIM<-LIM
 GC1_xs<-xs
 #GS1####
-load(file="GS1_10000_50_new.Rdata")
+load(file="GS1_10000_50.Rdata")
 GS1_LIM<-LIM
 GS1_xs<-xs
 

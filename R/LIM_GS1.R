@@ -4,7 +4,7 @@ library(LIM)
 library(splus2R)
 #MODEL SETUP####
 #-- Define directory that contains the input file
-DataDir <- "C:/Users/sarah/Downloads/LIM_GPSC_P/for_pub/RMD/"
+DataDir <- "GPSC_LIM/R/"
 #-- Read the ascii files
 File<- paste(DataDir,"GS1.input",sep="")  
 LIM<- Setup(file=File) 

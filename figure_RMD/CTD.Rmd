@@ -20,7 +20,7 @@ library(readxl)
 library(dplyr)
 library(ggplot2)
 library(ggthemes)
-GPSC_CTD<- read_excel("CTD.xlsx")
+GPSC_CTD<- read_xlsx("raw/CTD.xlsx")
 
 # Set negtive transmissometer to zero
 GPSC_CTD$transmissometer[GPSC_CTD$transmissometer<=0] <- 0 
@@ -63,7 +63,7 @@ Calculation of bottom water temperature
 ```{r}
 rm(list=ls())
 library(knitr)
-GPSC_CTD<- read_excel("CTD.xlsx")
+GPSC_CTD<- read_excel("raw/CTD.xlsx")
 GC1_Depth<-as.data.frame(GPSC_CTD %>%
                          filter(Station=="GC1")) %>% 
   group_by(Cruise) %>% summarise(Depth=max(pressure))
