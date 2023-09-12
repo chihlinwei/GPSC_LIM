@@ -31,8 +31,8 @@ library(cowplot)
 library(grid)
 library(formattable)
 library(kableExtra)
-load("GC1_Indices.Rdata")
-load("GS1_Indices.Rdata")
+load("GC1_Indices_new.Rdata")
+load("GS1_Indices_new.Rdata")
 
 # Calculate the mean and standard deviation of all indices
 GC <- as.data.frame(NetInd_GC)
@@ -105,11 +105,11 @@ GS_long <-
                values_to = "value")
 
 ind<-full_join(GC_long,GS_long)
-name<-list("T.."=expression(Total~system~throughput~(mg~C~m^-2)),
-           "TST"=expression(Total~system~throughflow~(mg~C~m^-2)),
-           "TSTC"=expression(Total~system~cycled~throughflow~(mg~C~m^-2)),
-           "FCI"="Finn cycling index(-)",
-           "AMI"="Average mutual information(-)"
+name<-list("T.."=expression(Total~system~throughput~("T..,"~mg~C~m^-2)),
+           "TST"=expression(Total~system~throughflow~("TST,"~mg~C~m^-2)),
+           "TSTC"=expression(Total~system~cycled~throughflow~("TSTC,"~mg~C~m^-2)),
+           "FCI"="Finn cycling index(FCI)",
+           "AMI"="Average mutual information(AMI)"
   
 )
 label <- function(variable, value){return(name[value])}

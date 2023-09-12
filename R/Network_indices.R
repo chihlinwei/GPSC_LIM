@@ -61,7 +61,7 @@ for (i in 1:nrow(GC_xs$X)){
   NetInd_GC[i, "AMI"]  <- UncInd (Flow=fm_GC, Import=Import, Export=Export)$AMI
 
   }
-save(NetInd_GC,file="GC1_Indices.Rdata")
+save(NetInd_GC,file="GC1_Indices_new.Rdata")
 
 
 #GS####

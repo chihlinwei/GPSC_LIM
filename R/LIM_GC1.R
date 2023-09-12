@@ -4,7 +4,7 @@ library(LIM)
 library(splus2R)
 #MODEL SETUP####
 #-- Define directory that contains the input file
-DataDir <- "C:/Users/user/Downloads/GPSC_data/for_pub/RMD/"
+DataDir <- "C:/Users/sarah/Downloads/LIM_GPSC_P/for_pub/RMD/"
 #-- Read the ascii files
 File<- paste(DataDir,"GC1.input",sep="")  
 LIM<- Setup(file=File) 
@@ -61,6 +61,7 @@ standarddev <- cbind(LIM$Unknowns, sqrt(diag(var(xs$X))))
 LA<-data.frame(flow=LIM$Unknowns, 
                mean=colMeans(xs$X),
                sd=sqrt(diag(var(xs$X))))
+LA<-format(LA, scientific = FALSE)
 for(flownr in flownrs){
   means   <- vector("numeric", nsample)
   sdevs   <- vector("numeric", nsample)
@@ -111,4 +112,14 @@ mean(samplerange$percCover, na.rm = T)
 BE<-LA$mean[2]/LA$mean[1]
 #export efficiency
 EE<-LA$mean[3]/LA$mean[1]
-
+#calculate mean and sd of TOU and BMU 
+library(dplyr)
+OU<-data.frame(BAC=xs$X[,10],
+                   MEI=xs$X[,13],
+                   MAC=xs$X[,16])
+OU$TOU<-OU$BAC+OU$MEI+OU$MAC
+OU$BMU<-OU$MEI+OU$MAC
+mean(OU$TOU)
+sd(OU$TOU)
+mean(OU$BMU)
+sd(OU$BMU)

@@ -3,7 +3,7 @@ Resp type:  maintenance respiration+BAC:	 30% of TOU (Mahaut et al. 1995)
 Units   :   Fluxes: mg C /m2/d
 Standing stocks:    mg C /m2
 
-Tung 2023.04.25
+Tung 2023.07.30
 
 #################################################################
 
@@ -18,7 +18,7 @@ MACmr= Tlim * 0.01 * MACSS
 
 
 !-- Stocks
-SEDSS   	= 917914.2     {mgC/m2}
+SEDSS   	= 549309.6     {mgC/m2}
 BACSS		= 42.80	{mgC/m2}
 MEISS		= 33.39	{mgC/m2}
 MACSS		= 77.66	{mgC/m2}

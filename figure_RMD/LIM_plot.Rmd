@@ -24,13 +24,13 @@ library(LIM)
 library(splus2R)
 #MODEL SETUP####
 #-- Define directory that contains the input file
-DataDir <- "C:/Users/user/Downloads/GPSC_data/for_pub/RMD/"
+DataDir <- "C:/Users/sarah/Downloads/LIM_GPSC_P/for_pub/RMD/supplementary material/RMD"
 #GC1####
-load(file="GC1_10000_50.Rdata")
+load(file="GC1_10000_50_new.Rdata")
 GC1_LIM<-LIM
 GC1_xs<-xs
 #GS1####
-load(file="GS1_10000_50.Rdata")
+load(file="GS1_10000_50_new.Rdata")
 GS1_LIM<-LIM
 GS1_xs<-xs
 
@@ -84,38 +84,38 @@ digraph{
   }  
   {
   # POM input
-  POC_W -> DET [color = tomato fontcolor=steelblue3 label=1265.388 penwidth=15.00]
+  POC_W -> DET [color = tomato fontcolor=steelblue3 label=1398.66 penwidth=15.00]
   # POM burial
-  DET -> BUR [color = tomato fontcolor=steelblue3 label=181.312 penwidth=3.01]
+  DET -> BUR [color = tomato fontcolor=steelblue3 label=200.37 penwidth=3.01]
   # POM export
-  DET -> EXP_S [color = tomato fontcolor=steelblue3 label=1068.555 penwidth=12.82]
+  DET -> EXP_S [color = tomato fontcolor=steelblue3 label=1182.73 penwidth=12.84]
   
   # Deposit feeding
-  DET -> BAC   [color = black  fontcolor=steelblue3 label=28.818 penwidth=1.32]
-  DET -> MEI   [color = black fontcolor=steelblue3 label=0.153  penwidth=1.00]
-  DET -> MAC   [color = black  fontcolor=steelblue3 label=0.006  penwidth=1.00]
+  DET -> BAC   [color = black  fontcolor=steelblue3 label=28.93 penwidth=1.29]
+  DET -> MEI   [color = black fontcolor=steelblue3 label=0.15  penwidth=1.00]
+  DET -> MAC   [color = black  fontcolor=steelblue3 label=0.01  penwidth=1.00]
   
   #Faeces
-  BAC -> DET   [color = black fontcolor=steelblue3 label=13.312 penwidth=1.15]
-  MEI -> DET   [color = black fontcolor=steelblue3 label=0.138 penwidth=1.00]
-  MAC -> DET   [color = black  fontcolor=steelblue3 label=0.007 penwidth=1.00]
+  BAC -> DET   [color = black fontcolor=steelblue3 label=13.37 penwidth=1.13]
+  MEI -> DET   [color = black fontcolor=steelblue3 label=0.14 penwidth=1.00]
+  MAC -> DET   [color = black  fontcolor=steelblue3 label=0.01 penwidth=1.00]
   
   # Interaction
   # BAC
-  BAC -> MEI   [color = black fontcolor=steelblue3 label=0.150 penwidth=1.00]
-  BAC -> MAC   [color = black fontcolor=steelblue3 label=0.006 penwidth=1.00]
+  BAC -> MEI   [color = black fontcolor=steelblue3 label=0.15 penwidth=1.00]
+  BAC -> MAC   [color = black fontcolor=steelblue3 label=0.01 penwidth=1.00]
 
   # MEI
-  MEI -> MAC   [color = black fontcolor=steelblue3 label=0.006 penwidth=1.00]
+  MEI -> MAC   [color = black fontcolor=steelblue3 label=0.01 penwidth=1.00]
   
   # Predation
-  MEI -> EXP_B   [color = gray fontcolor=steelblue3 label=0.053 penwidth=1.00]
-  MAC -> EXP_B   [color = gray fontcolor=steelblue3 label=0.008 penwidth=1.00]
+  MEI -> EXP_B   [color = gray fontcolor=steelblue3 label=0.05 penwidth=1.00]
+  MAC -> EXP_B   [color = gray fontcolor=steelblue3 label=0.01 penwidth=1.00]
  
   # Respiration
-  BAC -> DIC_W [color = gray fontcolor=steelblue3 label=15.350 penwidth=1.17]
-  MEI -> DIC_W [color = gray fontcolor=steelblue3 label=0.105 penwidth=1.00]
-  MAC -> DIC_W [color = gray fontcolor=steelblue3 label=0.004 penwidth=1.00]
+  BAC -> DIC_W [color = gray fontcolor=steelblue3 label=15.40 penwidth=1.15]
+  MEI -> DIC_W [color = gray fontcolor=steelblue3 label=0.11 penwidth=1.00]
+  MAC -> DIC_W [color = gray fontcolor=steelblue3 label=0.00 penwidth=1.00]
 }    
 }
 ")
@@ -150,38 +150,38 @@ digraph{
   }  
   {
   # POM input
-  POC_W -> DET [color = tomato fontcolor=steelblue3 label=105.463 penwidth=2.17]
+  POC_W -> DET [color = tomato fontcolor=steelblue3 label=104.88 penwidth=2.05]
   # POM burial
-  DET -> BUR [color = tomato fontcolor=steelblue3 label=77.964 penwidth=1.86]
+  DET -> BUR [color = tomato fontcolor=steelblue3 label=78.59 penwidth=1.79]
   # POM export
-  DET -> EXP_S [color = tomato fontcolor=steelblue3 label=12.113 penwidth=1.13]
+  DET -> EXP_S [color = tomato fontcolor=steelblue3 label=11.05 penwidth=1.11]
   
   # Deposit feeding
-  DET -> BAC   [color = black  fontcolor=steelblue3 label=22.340 penwidth=1.25]
-  DET -> MEI   [color = black fontcolor=steelblue3 label=5.157  penwidth=1.06]
-  DET -> MAC   [color = black  fontcolor=steelblue3 label=0.340  penwidth=1.00]
+  DET -> BAC   [color = black  fontcolor=steelblue3 label=23.06 penwidth=1.23]
+  DET -> MEI   [color = black fontcolor=steelblue3 label=4.94  penwidth=1.05]
+  DET -> MAC   [color = black  fontcolor=steelblue3 label=0.34  penwidth=1.00]
   
   #Faeces
-  BAC -> DET   [color = black fontcolor=steelblue3 label=8.654 penwidth=1.10]
-  MEI -> DET   [color = black fontcolor=steelblue3 label=3.527 penwidth=1.04]
-  MAC -> DET   [color = black  fontcolor=steelblue3 label=0.270 penwidth=1.00]
+  BAC -> DET   [color = black fontcolor=steelblue3 label=9.51 penwidth=1.10]
+  MEI -> DET   [color = black fontcolor=steelblue3 label=3.30 penwidth=1.03]
+  MAC -> DET   [color = black  fontcolor=steelblue3 label=0.27 penwidth=1.00]
   
   # Interaction
   # BAC
-  BAC -> MEI   [color = black fontcolor=steelblue3 label=2.153 penwidth=1.02]
-  BAC -> MAC   [color = black fontcolor=steelblue3 label=0.221 penwidth=1.00]
+  BAC -> MEI   [color = black fontcolor=steelblue3 label=2.011 penwidth=1.02]
+  BAC -> MAC   [color = black fontcolor=steelblue3 label=0.22 penwidth=1.00]
 
   # MEI
-  MEI -> MAC   [color = black fontcolor=steelblue3 label=0.192 penwidth=1.00]
+  MEI -> MAC   [color = black fontcolor=steelblue3 label=0.19 penwidth=1.00]
   
   # Predation
-  MEI -> EXP_B   [color = gray fontcolor=steelblue3 label=1.143 penwidth=1.01]
-  MAC -> EXP_B   [color = gray fontcolor=steelblue3 label=0.311 penwidth=1.00]
+  MEI -> EXP_B   [color = gray fontcolor=steelblue3 label=1.11 penwidth=1.01]
+  MAC -> EXP_B   [color = gray fontcolor=steelblue3 label=0.31 penwidth=1.00]
  
   # Respiration
-  BAC -> DIC_W [color = gray fontcolor=steelblue3 label=11.312  penwidth=1.13]
-  MEI -> DIC_W [color = gray fontcolor=steelblue3 label=2.448  penwidth=1.03]
-  MAC -> DIC_W [color = gray fontcolor=steelblue3 label=0.172 penwidth=1.00]
+  BAC -> DIC_W [color = gray fontcolor=steelblue3 label=11.31  penwidth=1.11]
+  MEI -> DIC_W [color = gray fontcolor=steelblue3 label=2.35  penwidth=1.02]
+  MAC -> DIC_W [color = gray fontcolor=steelblue3 label=0.17 penwidth=1.00]
 }    
 }
 ")
@@ -196,7 +196,7 @@ library(ggplot2)
 GC <- readPNG('GC1_graph.png')
 GS <- readPNG('GS1_graph.png')
 g<-grid.arrange(rasterGrob(GC),rasterGrob(GS),ncol=2)
-p<-as.ggplot(g)+draw_plot_label(label = c("GC1","GS1"),x=c(0.05,0.55),y=c(0.93,0.93))
+p<-as.ggplot(g)+draw_plot_label(label = c("(a) GC1","(b) GS1"),x=c(0.01,0.50),y=c(0.93,0.93))
 p
 ggsave('LIM.png',p,width=12,height=5)
 

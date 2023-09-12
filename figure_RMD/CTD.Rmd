@@ -64,6 +64,13 @@ Calculation of bottom water temperature
 rm(list=ls())
 library(knitr)
 GPSC_CTD<- read_excel("CTD.xlsx")
+GC1_Depth<-as.data.frame(GPSC_CTD %>%
+                         filter(Station=="GC1")) %>% 
+  group_by(Cruise) %>% summarise(Depth=max(pressure))
+GS1_Depth<-as.data.frame(GPSC_CTD %>%
+                         filter(Station=="GS1")) %>% 
+  group_by(Cruise) %>% summarise(Depth=max(pressure))
+
 #GC1
 GC1_CTD<-as.data.frame(GPSC_CTD %>%
                          filter(Station=="GC1"))

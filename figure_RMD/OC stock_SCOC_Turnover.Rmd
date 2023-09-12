@@ -12,7 +12,7 @@ knitr::opts_chunk$set(fig.width=15, fig.height=10)
 
 <font size="4"> 
 **Caption:**
-Carbon stocks of (A) sediment (B) bacteria (C) meiofauna and (D) macrofauna of GC1 and GS1. The bar chart and error bars show the mean and standard deviation of carbon stocks in different sampling seasons. The dotted lines represent the mean value of the stock from all sampling.
+Carbon stocks of (a) sediment (b) bacteria (c) meiofauna and (d) macrofauna of GC1 and GS1. The bar chart and error bars show the mean and standard deviation of carbon stocks in different sampling seasons. The dotted lines represent the mean value of the stock from all sampling.
 The dots represent the sum of OC stock (in ($mg C/m^2$)) for each replicate.
 Note that summer sampling of sediment was only conducted once in OR1_1114. Bacteria was only collected in cruise OR1-1190. Meiofauna was only collected once in each seasons for the both sites, so the three replicates were conducted during the single cruise.
 </font>
@@ -108,15 +108,15 @@ color<-as.vector(c(stepped(3)[-c(1:2)],stepped(11)[-c(1:10)],stepped(15)[-c(1:14
 Season_order <- c("SP","SU","AU") 
 
 ana_text1 <- data.frame(
-  label = c(NA,"Habitat p=0.0097"),
+  label = c(NA,"Habitat p=0.0399"),
   Station = c("GC1","GS1"),
   x     = c(1, 2.5),
-  y     = c(1, 1200000))
+  y     = c(1, 800000))
 ana_text2 <- data.frame(
-  label = c(NA,"Season p=0.9716"),
+  label = c(NA,"Season p=0.8077"),
   Station = c("GC1","GS1"),
   x     = c(1, 2.5),
-  y     = c(1, 1100000))
+  y     = c(1, 750000))
 
 plot_sed<-Season%>% 
   ggplot(aes(x = factor(Season,level=Season_order), y = Mean))+
@@ -126,7 +126,7 @@ plot_sed<-Season%>%
   scale_fill_manual(values=color,
                     breaks=c("SP","SU","AU"),
                     label=c("SP (Feb-Apr)","SU (Aug)","AU (Oct-Nov)"))+
-  ylim(0, NA)+ facet_wrap(~Station)+
+  ylim(0, 75000)+ facet_wrap(~Station)+
   scale_y_continuous(labels = scales::scientific)+
   theme_bw()+
   geom_text(data=ana_text1, fontface="bold",aes(x = x, y = y, label = label),size=6)+
@@ -361,7 +361,7 @@ a_row<-plot_grid(
   p1+ theme(legend.position="none"),
   p4+ theme(legend.position="none"),
   align = 'vh',
-  labels = c("A","B"),
+  labels = c("(a)","(b)"),
   rel_widths = c(1, 1),
   hjust = -1, nrow = 1,
   axis = "b",label_size = 18)
@@ -372,7 +372,7 @@ b_row <- plot_grid(
   p2 + theme(legend.position="none"),
   p3 + theme(legend.position="none"),
   align = 'vh',
-  labels = c("C", "D"),
+  labels = c("(c)", "(d)"),
   rel_widths = c(1, 1),
   hjust = -1,
   nrow = 1,axis = "b",label_size = 18)
@@ -440,7 +440,7 @@ TOU_plot<-dfSCOC %>%
   geom_bar(aes(fill =Season),
            stat = "identity",
            position = position_dodge(),width = 0.6)+
-  ylab(expression(TOU~(mg~C~m^-2)))+
+  ylab(expression(TOU~(mg~C~m^-2~d^-1)))+
   xlab("Season")+
   scale_fill_manual(values=color,
                     breaks=c("SP","AU"),
@@ -522,7 +522,7 @@ DOU_plot <-dfDOU%>%
                     breaks=c("SP","AU"),
                     label=c("SP (Feb-Apr)","AU (Oct-Nov)"))+
   facet_wrap(~Station)+
-  ylab(expression(DOU~(mg~C~m^-2)))+
+  ylab(expression(DOU~(mg~C~m^-2~d^-1)))+
   ylim(-5,125)+
   theme_bw()+
   geom_text(data=ana_text1,aes(x = x, y = y, label = label),size=4.2)+
@@ -578,12 +578,12 @@ kable(mean_table, "html",align = "c") %>%
   add_header_above(c(" " = 1, "TOU" = 2, "DOU" = 2, "BMU" = 2)) 
 
 ana_text1 <- data.frame(
-  label = c(NA,"Habitat p=0.7963"),
+  label = c(NA,"Habitat p=0.5431"),
   Station = c("GC1","GS1"),
   x     = c(1, 1.8),
   y     = c(1, 120))
 ana_text2 <- data.frame(
-  label = c(NA,"Season p=0.7269"),
+  label = c(NA,"Season p=0.8666"),
   Station = c("GC1","GS1"),
   x     = c(1, 1.8),
   y     = c(1, 115))
@@ -593,7 +593,7 @@ BOU_plot <- dfBOU %>%
   geom_bar(aes(fill =Season),
            stat = "identity",
            position = position_dodge(),width = 0.6)+
-  ylab(expression(BMU~(mg~C~m^-2)))+
+  ylab(expression(BMU~(mg~C~m^-2~d^-1)))+
   xlab("Season")+
   scale_fill_manual(values=color,
                     breaks=c("SP","AU"),
@@ -627,7 +627,7 @@ prow <- plot_grid(
   p2 + theme(legend.position="none"),
   p3 + theme(legend.position="none"),
   align = 'vh',
-  labels = c("A", "B", "C"),
+  labels = c("(a)", "(b)", "(c)"),
   hjust = -1,
   nrow = 1,label_size = 18
 )
@@ -650,15 +650,12 @@ Stock turnover (unit: year or day) calculated with the two different estimations
 #-- Load the LIM (and limSolve) package 
 library(LIM)
 library(splus2R)
-#MODEL SETUP####
-#-- Define directory that contains the input file
-DataDir <- "C:/Users/user/Downloads/GPSC_data/for_pub/RMD/"
 #GC1####
-load(file="GC1_10000_50.Rdata")
+load(file="GC1_10000_50_new.Rdata")
 GC1_LIM<-LIM
 GC1_xs<-xs
 #GS1####
-load(file="GS1_10000_50.Rdata")
+load(file="GS1_10000_50_new.Rdata")
 GS1_LIM<-LIM
 GS1_xs<-xs
 
