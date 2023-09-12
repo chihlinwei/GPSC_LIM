@@ -1,26 +1,8 @@
----
-title: "PERMANOVA"
-author: "ChuehChenTung"
-date: '2023-04-17'
-output: html_document
----
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-knitr::opts_chunk$set(fig.width=15, fig.height=10) 
-```
-
-<font size="4"> 
-**Caption:**
-PERMANOVA on carbon standing stocks and oxygen utilization of GC1 and GS1.
-
-</font>
-
-```{r}
 rm(list = ls())
 library(readxl)
 library(vegan)
 library(dplyr)
+#####SED#####
 SED<-read_xlsx("raw/SEDstock.xlsx")
 GC1<-SED %>% filter(Station=="GC1") %>% data.frame()
 GS1<-SED %>% filter(Station=="GS1") %>% data.frame()
@@ -91,9 +73,8 @@ set.seed(100)
 permanova_sed<-adonis2(SED$OC~Season*Station,data = SED, permutations = 9999,
                        method = "euclidean",sqrt.dist = F)
 permanova_sed
-```
 
-```{r}
+#####BAC#####
 rm(list = ls())
 BAC<-read_xlsx("raw/BAC.xlsx")
 set.seed(100)
@@ -111,13 +92,9 @@ set.seed(100)
 permanova_Bac<-adonis2(BAC$biomass~Station,data = BAC, permutations = 9999,
                        method = "euclidean",sqrt.dist = F)
 permanova_Bac
-```
 
-```{r}
+#####MAC#####
 rm(list = ls())
-library(readxl)
-library(dplyr)
-library(ggplot2)
 MAC<-read_xlsx("macro_biomass.xlsx")
 
 #outlier
@@ -140,11 +117,7 @@ MAC$Season[MAC$Cruise%in%c("OR1_1099","OR1_1102","OR1_1128","OR1_1190","OR1_1132
 MAC$Season[MAC$Cruise%in%c("OR1_1096","OR1_1126","OR1_1151")]<-"AU"
 MAC$Season[MAC$Cruise=="OR1_1114"]<-"SU"
 
-
-library(vegan)
-library(dplyr)
 MAC<-MAC %>% filter(Season!="SU")
-
 set.seed(100)
 
 #check variance:PERMDISP####
@@ -166,12 +139,10 @@ set.seed(100)
 permanova_mac<-adonis2(MAC$OC~Season*Station,data = MAC, permutations = 9999,
                        method = "euclidean",sqrt.dist = F)
 permanova_mac
-```
 
-```{r}
+#####MEI#####
 rm(list = ls())
-library(readxl)
-library(dplyr)
+
 Mei<-read_xlsx("raw/meio_biomass.xlsx")
 Mei$Season[Mei$Cruise=="OR1_1114"]<-"SU"
 Mei$Season[Mei$Cruise=="OR1_1126"]<-"AU"
@@ -182,11 +153,8 @@ byseason<-Mei %>% rename(OC=total_biomass) %>%
   group_by(Season,Station) %>% 
   summarise(mean=mean(OC),
             sd=sd(OC))
-library(vegan)
-library(dplyr)
 
 set.seed(100)
-
 #check variance:PERMDISP####
 #1 calculate distance
 Mei_dist<-vegdist(Mei$total_biomass,method = "euclidean")
@@ -208,12 +176,8 @@ permanova_mei<-adonis2(Mei$total_biomass~Season*Station,
                        method = "euclidean",sqrt.dist = F)
 permanova_mei
 
-```
-
-```{r}
+#####TOU#####
 rm(list = ls())
-library(readxl)
-library(dplyr)
 TOU<-read_xlsx("raw/TOU.xlsx")
 #calculation: from In_situ_DO_flux (mmol O2/m2/d) to carbon unit(mg C/m2/d)
 #respiratory quotient (RQ) of 0.85 (Rowe et al., 2008) (ratio of CO2 produced per O2 consumed)
@@ -221,10 +185,8 @@ TOU<-read_xlsx("raw/TOU.xlsx")
 #mmolC -> mgC= 12 
 TOU$SCOC<-TOU$In_situ_DO_flux*(-1)*0.85*12
 TOU$O2<-TOU$In_situ_DO_flux*(-1)
-library(vegan)
-library(dplyr)
-set.seed(100)
 
+set.seed(100)
 #check variance:PERMDISP####
 #1 calculate distance
 TOU_dist<-vegdist(TOU$SCOC,method = "euclidean")
@@ -246,12 +208,8 @@ permanova_TOU<-adonis2(TOU$SCOC~Season*Station,
                        method = "euclidean",sqrt.dist = F)
 permanova_TOU
 
-```
-
-```{r}
+#####DOU#####
 rm(list = ls())
-library(readxl)
-library(dplyr)
 DOU<-read_xlsx("raw/DOU.xlsx")
 #nmol/cm2/s -> mmol/m2/d
 #1e4*3600*24/1e6 = 864
@@ -261,10 +219,8 @@ DOU<-read_xlsx("raw/DOU.xlsx")
 #mmolC -> mgC= 12 
 DOU$C<-DOU$In_situ_Integrated_Prod*(-1)*864*0.85*12
 DOU$O2<-DOU$In_situ_Integrated_Prod*(-1)*864
-library(vegan)
-library(dplyr)
-set.seed(100)
 
+set.seed(100)
 #check variance:PERMDISP####
 #1 calculate distance
 DOU_dist<-vegdist(DOU$C,method = "euclidean")
@@ -285,20 +241,14 @@ permanova_DOU<-adonis2(DOU$C~Season*Station,
                        data = DOU, permutations = 9999,
                        method = "euclidean",sqrt.dist = F)
 permanova_DOU
-```
-
-```{r}
+#####BMU#####
 rm(list = ls())
-library(readxl)
-library(dplyr)
 BOU<-read_xlsx("raw/BOU.xlsx")
 BOU$C<-BOU$BMU*(-1)*0.85*12
 BOU$O2<-BOU$BMU*(-1)
 BOU<-BOU %>% filter(C>0 & O2>0)
-library(vegan)
-library(dplyr)
-set.seed(100)
 
+set.seed(100)
 #check variance:PERMDISP####
 #1 calculate distance
 BOU_dist<-vegdist(BOU$C,method = "euclidean")
@@ -319,4 +269,3 @@ permanova_BOU<-adonis2(BOU$C~Season*Station,
                        data = BOU, permutations = 9999,
                        method = "euclidean",sqrt.dist = F)
 permanova_BOU
-```

@@ -1,7 +1,7 @@
 ---
 title: "CTD"
 author: "ChuehChenTung"
-date: '2023-03-27'
+date: '2023-09-13'
 output: html_document
 ---
 ```{r setup, include=FALSE}
@@ -20,7 +20,7 @@ library(readxl)
 library(dplyr)
 library(ggplot2)
 library(ggthemes)
-GPSC_CTD<- read_xlsx("raw/CTD.xlsx")
+GPSC_CTD<- read_xlsx("CTD.xlsx")
 
 # Set negtive transmissometer to zero
 GPSC_CTD$transmissometer[GPSC_CTD$transmissometer<=0] <- 0 
@@ -54,16 +54,16 @@ ggplot(data=GC1GS1, aes(x=transmissometer, y=pressure, colour=Station))+
   theme_base()+
   guides(color = guide_legend(override.aes = list(size = 3) ) )+
   theme(legend.text = element_text(size = 15))
-ggsave("CTD_trans.png",width = 12, height =9)
+
 ```
 
 <font size="4"> 
-Calculation of bottom water temperature
+**Caption:**Calculation of bottom water temperature.
 </font>
 ```{r}
 rm(list=ls())
 library(knitr)
-GPSC_CTD<- read_excel("raw/CTD.xlsx")
+GPSC_CTD<- read_excel("CTD.xlsx")
 GC1_Depth<-as.data.frame(GPSC_CTD %>%
                          filter(Station=="GC1")) %>% 
   group_by(Cruise) %>% summarise(Depth=max(pressure))

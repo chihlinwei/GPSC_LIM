@@ -1,23 +1,3 @@
----
-title: "OC stock, SCOC and Turnover"
-author: "ChuehChenTung"
-date: '2023-03-28'
-output: html_document
----
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-knitr::opts_chunk$set(fig.width=15, fig.height=10) 
-```
-
-<font size="4"> 
-**Caption:**
-Carbon stocks of (a) sediment (b) bacteria (c) meiofauna and (d) macrofauna of GC1 and GS1. The bar chart and error bars show the mean and standard deviation of carbon stocks in different sampling seasons. The dotted lines represent the mean value of the stock from all sampling.
-The dots represent the sum of OC stock (in ($mg C/m^2$)) for each replicate.
-Note that summer sampling of sediment was only conducted once in OR1_1114. Bacteria was only collected in cruise OR1-1190. Meiofauna was only collected once in each seasons for the both sites, so the three replicates were conducted during the single cruise.
-</font>
-
-```{r}
 rm(list = ls())
 library(readxl)
 library(dplyr)
@@ -366,8 +346,8 @@ a_row<-plot_grid(
   hjust = -1, nrow = 1,
   axis = "b",label_size = 18)
 legend <- get_legend(p2 + 
-    guides(color = guide_legend(nrow = 1)) +
-    theme(legend.position = "bottom"))
+                       guides(color = guide_legend(nrow = 1)) +
+                       theme(legend.position = "bottom"))
 b_row <- plot_grid(
   p2 + theme(legend.position="none"),
   p3 + theme(legend.position="none"),
@@ -380,17 +360,9 @@ b_row <- plot_grid(
 b_row<-plot_grid(b_row, legend, ncol = 1, rel_heights = c(1, .1))
 plots <- align_plots(a_row,b_row, align = 'v', axis = 'l')
 plot_grid(plots[[1]],plots[[2]],nrow = 2,rel_heights = c(1,1)) 
-ggsave("OC.png",width = 18, height =18)
+ggsave("fig/f02.png",width = 18, height =18)
 
-```
-
-<font size="4"> 
-**Caption:**
-Measured (A) total oxygen utilization(TOU), (B) diffusive oxygen utilization and (C)  benthos-mediated oxygen utilization (BMU) of GC1 and GS1.The bar chart and error bars show the mean and standard deviation of carbon stocks in spring and autumn cruises. The dots represent the measurements for each replicate. The dotted lines represent the mean values from all sampling.
-No significant difference between seasons and habitats from PERMANOVA results.
-
-</font>
-```{r}
+#####Oxygen utilization#####
 TOU<-read_xlsx("raw/TOU.xlsx")
 #calculation: from In_situ_DO_flux (mmol O2/m2/d) to carbon unit(mg C/m2/d)
 #respiratory quotient (RQ) of 0.85 (Rowe et al., 2008) (ratio of CO2 produced per O2 consumed)
@@ -467,7 +439,7 @@ TOU_plot<-dfSCOC %>%
              position = position_jitter(0.1))+
   geom_errorbar(aes(ymin = Mean - sd, ymax = Mean + sd), width = 0.1)
 
-DOU<-read_xlsx("DOU.xlsx")
+DOU<-read_xlsx("raw/DOU.xlsx")
 #nmol/cm2/s -> mmol/m2/d
 #1e4*3600*24/1e6 = 864
 #calculation: from In_situ_DO_flux (mmol O2/m2/d) to carbon unit(mg C/m2/d)
@@ -638,24 +610,15 @@ legend <- get_legend(
     theme(legend.position = "bottom")
 )
 plot_grid(prow, legend, ncol = 1, rel_heights = c(1, .1))
-ggsave("SCOC.png",width = 18, height =9)
+ggsave("fig/f03.png",width = 18, height =9)
 
-```
-
-<font size="4"> 
-**Caption:**
-Stock turnover (unit: year or day) calculated with the two different estimations of oxygen utilization rates. 
-</font>
-```{r}
-#-- Load the LIM (and limSolve) package 
-library(LIM)
-library(splus2R)
+#####Turnover#####
 #GC1####
-load(file="GC1_10000_50.Rdata")
+load(file="figure_RMD/GC1_10000_50.Rdata")
 GC1_LIM<-LIM
 GC1_xs<-xs
 #GS1####
-load(file="GS1_10000_50.Rdata")
+load(file="figure_RMD/GS1_10000_50.Rdata")
 GS1_LIM<-LIM
 GS1_xs<-xs
 
@@ -684,5 +647,3 @@ to<-data.frame(Station=c("GC1","GC1","GS1","GS1"),
 kable(to, "html",align = "c",
       col.names = c("Station","OCtotal/TOU (yr)","OCbac/DOU (d)","OCmei+mac/BOU (d)","Method")) %>%
   kable_styling("striped", full_width = F) 
-         
-```

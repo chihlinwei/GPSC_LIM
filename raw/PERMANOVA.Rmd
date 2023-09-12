@@ -1,0 +1,322 @@
+---
+title: "PERMANOVA"
+author: "ChuehChenTung"
+date: '2023-04-17'
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+knitr::opts_chunk$set(fig.width=15, fig.height=10) 
+```
+
+<font size="4"> 
+**Caption:**
+PERMANOVA on carbon standing stocks and oxygen utilization of GC1 and GS1.
+
+</font>
+
+```{r}
+rm(list = ls())
+library(readxl)
+library(vegan)
+library(dplyr)
+SED<-read_xlsx("SEDstock.xlsx")
+GC1<-SED %>% filter(Station=="GC1") %>% data.frame()
+GS1<-SED %>% filter(Station=="GS1") %>% data.frame()
+
+# multilayer 0-5 cm
+ml_0_5<- c("0-1", "1-2", "2-3", "3-4", "4-5")
+#with multilayer:"OR1_1102","OR1_1114","OR1_1126"
+#"0-1"+"1-2"+"2-3"+"3-4"+"4-5"+5*"9-10"=10cm sediment OC
+multi<- c("OR1_1102","OR1_1114","OR1_1126")
+
+GC1_ml_sum05<-GC1 %>% subset(Cruise %in% multi & 
+                               Section %in% ml_0_5, Cruise & OC)%>% 
+  group_by(Cruise) %>% 
+  summarize(OC=sum(OC=OC))
+GC1_ml_sum910<-GC1 %>%   filter(Section=="9-10") %>%
+  group_by(Cruise) %>%   
+  summarise(OC=5*OC)
+GC1_ml_sum<-rbind(GC1_ml_sum05,GC1_ml_sum910) %>% group_by(Cruise) %>% 
+  summarise(OC=sum(OC))
+
+`%!in%`<- Negate(`%in%`)
+#only single layer: all cruises except for "OR1_1102","OR1_1114","OR1_1126"
+#10*"0-1"=10cm sediment OC
+GC1_sing_sum<-subset(GC1, Cruise %!in% multi, Cruise & OC)%>%
+  group_by(Cruise) %>% 
+  summarize(OC=10*OC)
+GC1_SEDsum<-rbind(GC1_sing_sum,GC1_ml_sum) %>% arrange(Cruise) %>% 
+  mutate(Season=c("AU","AU","SP","SP","SU","AU","SP","AU","SP","SP","AU"),
+         Station="GC1")
+#GS1
+GS1_ml_sum05<-GS1 %>% subset(Cruise %in% multi & 
+                               Section %in% ml_0_5, Cruise & OC) %>% 
+  group_by(Cruise)  %>% 
+  summarize(OC=sum(OC=OC))
+GS1_ml_sum910<-GS1 %>% 
+  filter(Section=="9-10") %>%
+  group_by(Cruise) %>% 
+  summarise(OC=5*OC)
+GS1_ml_sum<-rbind(GS1_ml_sum05,GS1_ml_sum910) %>% group_by(Cruise) %>% 
+  summarise(OC=sum(OC))
+
+GS1_sing_sum<-subset(GS1, Cruise %!in% multi, Cruise & OC)%>%
+  group_by(Cruise) %>% 
+  summarize(OC=10*OC)
+GS1_SEDsum<-rbind(GS1_sing_sum,GS1_ml_sum) %>% arrange(Cruise) %>% 
+  mutate(Season=c("AU","SP","SP","SU","AU","AU","SP","SP","AU"),
+         Station="GS1")
+SED<-rbind(GC1_SEDsum,GS1_SEDsum)%>% filter(Season!="SU")
+
+set.seed(100)
+
+#check variance:PERMDISP####
+#1 calculate distance
+sed_dist<-vegdist(SED$OC,method = "euclidean")
+#2 group->calculate data dispersion:Station
+beta_station<-betadisper(sed_dist,group = SED$Station)
+#3 permutation grouping and calculate variance difference
+permu_station<-permutest(beta_station,permutations = 9999)
+permu_station
+#2 group->calculate data dispersion:Season
+beta_season<-betadisper(sed_dist,group = SED$Season)
+#3 permutation grouping and calculate variance difference
+permu_season<-permutest(beta_season,permutations = 9999)
+permu_season
+
+set.seed(100)
+#PERMANOVA####
+permanova_sed<-adonis2(SED$OC~Season*Station,data = SED, permutations = 9999,
+                       method = "euclidean",sqrt.dist = F)
+permanova_sed
+```
+
+```{r}
+rm(list = ls())
+BAC<-read_xlsx("BAC.xlsx")
+set.seed(100)
+#check variance:PERMDISP####
+#1 calculate distance
+dist<-vegdist(BAC$biomass,method = "euclidean")
+#2 group->calculate data dispersion:Station
+beta_station<-betadisper(dist,group = BAC$Station)
+#3 permutation grouping and calculate variance difference
+permu_station<-permutest(beta_station,permutations = 9999)
+permu_station
+
+set.seed(100)
+#PERMANOVA####
+permanova_Bac<-adonis2(BAC$biomass~Station,data = BAC, permutations = 9999,
+                       method = "euclidean",sqrt.dist = F)
+permanova_Bac
+```
+
+```{r}
+rm(list = ls())
+library(readxl)
+library(dplyr)
+library(ggplot2)
+MAC<-read_xlsx("macro_biomass.xlsx")
+
+#outlier
+GC1<-MAC %>% filter(Station=="GC1")
+GC1$zscore <- abs((GC1$OC-mean(GC1$OC))/sd(GC1$OC))
+GC1 <- subset(GC1, GC1$zscore < 3)
+GC1<-GC1%>% 
+  group_by(Cruise, Habitat, Station, Deployment, Tube) %>% 
+  summarise(OC = sum(OC))
+
+GS1<-MAC %>% filter(Station=="GS1")
+GS1$zscore <- abs((GS1$OC-mean(GS1$OC))/sd(GS1$OC))
+GS1 <- subset(GS1, GS1$zscore < 3)
+GS1<-GS1%>% 
+  group_by(Cruise, Habitat, Station, Deployment, Tube) %>% 
+  summarise(OC = sum(OC))
+
+MAC<-rbind(GC1,GS1)
+MAC$Season[MAC$Cruise%in%c("OR1_1099","OR1_1102","OR1_1128","OR1_1190","OR1_1132")]<-"SP"
+MAC$Season[MAC$Cruise%in%c("OR1_1096","OR1_1126","OR1_1151")]<-"AU"
+MAC$Season[MAC$Cruise=="OR1_1114"]<-"SU"
+
+
+library(vegan)
+library(dplyr)
+MAC<-MAC %>% filter(Season!="SU")
+
+set.seed(100)
+
+#check variance:PERMDISP####
+#1 calculate distance
+mac_dist<-vegdist(MAC$OC,method = "euclidean")
+#2 group->calculate data dispersion:Station
+beta_station<-betadisper(mac_dist,group = MAC$Station)
+#3 permutation grouping and calculate variance difference
+permu_station<-permutest(beta_station,permutations = 9999)
+permu_station
+#2 group->calculate data dispersion:Season
+beta_season<-betadisper(mac_dist,group = MAC$Season)
+#3 permutation grouping and calculate variance difference
+permu_season<-permutest(beta_season,permutations = 9999)
+permu_season
+
+set.seed(100)
+#PERMANOVA####
+permanova_mac<-adonis2(MAC$OC~Season*Station,data = MAC, permutations = 9999,
+                       method = "euclidean",sqrt.dist = F)
+permanova_mac
+```
+
+```{r}
+rm(list = ls())
+library(readxl)
+library(dplyr)
+Mei<-read_xlsx("meio_biomass.xlsx")
+Mei$Season[Mei$Cruise=="OR1_1114"]<-"SU"
+Mei$Season[Mei$Cruise=="OR1_1126"]<-"AU"
+Mei$Season[Mei$Cruise=="OR1_1128"]<-"SP"
+Mei$Season[Mei$Cruise=="OR1_1132"]<-"SP"
+
+byseason<-Mei %>% rename(OC=total_biomass) %>% 
+  group_by(Season,Station) %>% 
+  summarise(mean=mean(OC),
+            sd=sd(OC))
+library(vegan)
+library(dplyr)
+
+set.seed(100)
+
+#check variance:PERMDISP####
+#1 calculate distance
+Mei_dist<-vegdist(Mei$total_biomass,method = "euclidean")
+#2 group->calculate data dispersion:Station
+beta_station<-betadisper(Mei_dist,group = Mei$Station)
+#3 permutation grouping and calculate variance difference
+permu_station<-permutest(beta_station,permutations = 9999)
+permu_station
+#2 group->calculate data dispersion:Season
+beta_season<-betadisper(Mei_dist,group = Mei$Season)
+#3 permutation grouping and calculate variance difference
+permu_season<-permutest(beta_season,permutations = 9999)
+permu_season
+
+set.seed(100)
+#PERMANOVA####
+permanova_mei<-adonis2(Mei$total_biomass~Season*Station,
+                       data = Mei, permutations = 9999,
+                       method = "euclidean",sqrt.dist = F)
+permanova_mei
+
+```
+
+```{r}
+rm(list = ls())
+library(readxl)
+library(dplyr)
+TOU<-read_xlsx("TOU.xlsx")
+#calculation: from In_situ_DO_flux (mmol O2/m2/d) to carbon unit(mg C/m2/d)
+#respiratory quotient (RQ) of 0.85 (Rowe et al., 2008) (ratio of CO2 produced per O2 consumed)
+#C:O2= 0.85 = 1 mmolO2 -> 0.85 mmolC  
+#mmolC -> mgC= 12 
+TOU$SCOC<-TOU$In_situ_DO_flux*(-1)*0.85*12
+TOU$O2<-TOU$In_situ_DO_flux*(-1)
+library(vegan)
+library(dplyr)
+set.seed(100)
+
+#check variance:PERMDISP####
+#1 calculate distance
+TOU_dist<-vegdist(TOU$SCOC,method = "euclidean")
+#2 group->calculate data dispersion:Station
+beta_station<-betadisper(TOU_dist,group = TOU$Station)
+#3 permutation grouping and calculate variance difference
+permu_station<-permutest(beta_station,permutations = 9999)
+permu_station
+#2 group->calculate data dispersion:Season
+beta_season<-betadisper(TOU_dist,group = TOU$Season)
+#3 permutation grouping and calculate variance difference
+permu_season<-permutest(beta_season,permutations = 9999)
+permu_season
+
+set.seed(100)
+#PERMANOVA####
+permanova_TOU<-adonis2(TOU$SCOC~Season*Station,
+                       data = TOU, permutations = 9999,
+                       method = "euclidean",sqrt.dist = F)
+permanova_TOU
+
+```
+
+```{r}
+rm(list = ls())
+library(readxl)
+library(dplyr)
+DOU<-read_xlsx("DOU.xlsx")
+#nmol/cm2/s -> mmol/m2/d
+#1e4*3600*24/1e6 = 864
+#calculation: from In_situ_DO_flux (mmol O2/m2/d) to carbon unit(mg C/m2/d)
+#respiratory quotient (RQ) of 0.85 (Rowe et al., 2008) (ratio of CO2 produced per O2 consumed)
+#C:O2= 0.85 = 1 mmolO2 -> 0.85 mmolC  
+#mmolC -> mgC= 12 
+DOU$C<-DOU$In_situ_Integrated_Prod*(-1)*864*0.85*12
+DOU$O2<-DOU$In_situ_Integrated_Prod*(-1)*864
+library(vegan)
+library(dplyr)
+set.seed(100)
+
+#check variance:PERMDISP####
+#1 calculate distance
+DOU_dist<-vegdist(DOU$C,method = "euclidean")
+#2 group->calculate data dispersion:Station
+beta_station<-betadisper(DOU_dist,group = DOU$Station)
+#3 permutation grouping and calculate variance difference
+permu_station<-permutest(beta_station,permutations = 9999)
+permu_station
+#2 group->calculate data dispersion:Season
+beta_season<-betadisper(DOU_dist,group = DOU$Season)
+#3 permutation grouping and calculate variance difference
+permu_season<-permutest(beta_season,permutations = 9999)
+permu_season
+
+set.seed(100)
+#PERMANOVA####
+permanova_DOU<-adonis2(DOU$C~Season*Station,
+                       data = DOU, permutations = 9999,
+                       method = "euclidean",sqrt.dist = F)
+permanova_DOU
+```
+
+```{r}
+rm(list = ls())
+library(readxl)
+library(dplyr)
+BOU<-read_xlsx("BOU.xlsx")
+BOU$C<-BOU$BMU*(-1)*0.85*12
+BOU$O2<-BOU$BMU*(-1)
+BOU<-BOU %>% filter(C>0 & O2>0)
+library(vegan)
+library(dplyr)
+set.seed(100)
+
+#check variance:PERMDISP####
+#1 calculate distance
+BOU_dist<-vegdist(BOU$C,method = "euclidean")
+#2 group->calculate data dispersion:Station
+beta_station<-betadisper(BOU_dist,group = BOU$Station)
+#3 permutation grouping and calculate variance difference
+permu_station<-permutest(beta_station,permutations = 9999)
+permu_station
+#2 group->calculate data dispersion:Season
+beta_season<-betadisper(BOU_dist,group = BOU$Season)
+#3 permutation grouping and calculate variance difference
+permu_season<-permutest(beta_season,permutations = 9999)
+permu_season
+
+set.seed(100)
+#PERMANOVA####
+permanova_BOU<-adonis2(BOU$C~Season*Station,
+                       data = BOU, permutations = 9999,
+                       method = "euclidean",sqrt.dist = F)
+permanova_BOU
+```

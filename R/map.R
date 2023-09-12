@@ -1,24 +1,3 @@
----
-title: "Map"
-author: "ChuehChenTung"
-date: '2023-03-24'
-output: html_document 
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-knitr::opts_chunk$set(fig.width=15, fig.height=10) 
-```
-
-<font size="4"> 
-**Caption:**
-Map of sampling stations visited From 2014 to 2020.
-(a) The sampling area off the continental margin of SW Taiwan. (b) Sampling sites on the upper Gaoping Submarine Canyon (GC) and Gaoping Slope (GS),abbreviated as GC1 and GS1, respectively.
-
-</font>
-
-```{r}
 rm(list=ls())
 library(marmap)
 library(ggplot2)
@@ -55,7 +34,7 @@ long_GC1 <- 120.4105
 long_GS1 <- 120.3941
 lat_GC1 <- 22.41653
 lat_GS1 <- 22.24033
-GPSC<-read.table('119_121_21_23.xyz',
+GPSC<-read.table('raw/119_121_21_23.xyz',
                  col.names = c("long", "lat", "depth")) %>%
   data.frame %>% 
   filter(long > 120.25 & long < 120.7) %>% 
@@ -110,6 +89,5 @@ site<- ggplot()+
 map<-ggdraw() +
   draw_plot(site,) +
   draw_plot(tw, x = 0.53, y = 0.65, width = 0.35, height = 0.35)
-ggsave("map.png",map,width = 9, height =9)
+ggsave("fig/f01.png",map,width = 9, height =9)
 map
-```

@@ -23,8 +23,6 @@ library(patchwork)
 library(LIM)
 library(splus2R)
 #MODEL SETUP####
-#-- Define directory that contains the input file
-DataDir <- "GPSC_LIM/figure_RMD"
 #GC1####
 load(file="GC1_10000_50.Rdata")
 GC1_LIM<-LIM
@@ -198,6 +196,4 @@ GS <- readPNG('GS1_graph.png')
 g<-grid.arrange(rasterGrob(GC),rasterGrob(GS),ncol=2)
 p<-as.ggplot(g)+draw_plot_label(label = c("(a) GC1","(b) GS1"),x=c(0.01,0.50),y=c(0.93,0.93))
 p
-ggsave('LIM.png',p,width=12,height=5)
-
 ```

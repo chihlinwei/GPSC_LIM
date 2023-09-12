@@ -1,22 +1,3 @@
----
-title: "Network indices"
-author: "ChuehChenTung"
-date: '2023-04-25'
-output: html_document
----
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-knitr::opts_chunk$set(fig.width=15, fig.height=10) 
-```
-
-<font size="4"> 
-**Caption:**
-Selected network indices of GC1 and GS1. The indices were calculated from 10,000 solutions of the LIM, as a result, there were also 10,000 values for each index. Therefore, they were presented as box plots. Table at bottom right shows the comparison of network indices calculated for GC1 and GS1.The number indicates the fraction of network values that are higher in GC1.
-
-</font>
-
-```{r}
 rm(list = ls())
 library(LIM)
 library(NetIndices)
@@ -31,8 +12,8 @@ library(cowplot)
 library(grid)
 library(formattable)
 library(kableExtra)
-load("GC1_Indices.Rdata")
-load("GS1_Indices.Rdata")
+load("figure_RMD/GC1_Indices.Rdata")
+load("figure_RMD/GS1_Indices.Rdata")
 
 # Calculate the mean and standard deviation of all indices
 GC <- as.data.frame(NetInd_GC)
@@ -110,7 +91,7 @@ name<-list("T.."=expression(Total~system~throughput~("T..,"~mg~C~m^-2)),
            "TSTC"=expression(Total~system~cycled~throughflow~("TSTC,"~mg~C~m^-2)),
            "FCI"="Finn cycling index(FCI)",
            "AMI"="Average mutual information(AMI)"
-  
+           
 )
 label <- function(variable, value){return(name[value])}
 
@@ -137,6 +118,5 @@ plot<-ind %>%
         panel.border = element_rect(colour = "black", fill=NA, size=1.5))
 
 plot+annotation_custom(ggplotGrob(table),
-                        xmin = 6, ymin = 7)
-ggsave("NI.png",width = 15, height =12)
-```
+                       xmin = 6, ymin = 7)
+ggsave("fig/f05.png",width = 15, height =12)
