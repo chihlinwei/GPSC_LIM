@@ -5,11 +5,11 @@ library(LIM)
 library(splus2R)
 #MODEL SETUP####
 #GC1####
-load(file="figure_RMD/GC1_10000_50.Rdata")
+load(file="Rdata/GC1_10000_50.Rdata")
 GC1_LIM<-LIM
 GC1_xs<-xs
 #GS1####
-load(file="figure_RMD/GS1_10000_50.Rdata")
+load(file="Rdata/GS1_10000_50.Rdata")
 GS1_LIM<-LIM
 GS1_xs<-xs
 

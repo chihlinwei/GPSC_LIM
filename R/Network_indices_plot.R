@@ -12,8 +12,8 @@ library(cowplot)
 library(grid)
 library(formattable)
 library(kableExtra)
-load("figure_RMD/GC1_Indices.Rdata")
-load("figure_RMD/GS1_Indices.Rdata")
+load("Rdata/GC1_Indices.Rdata")
+load("Rdata/GS1_Indices.Rdata")
 
 # Calculate the mean and standard deviation of all indices
 GC <- as.data.frame(NetInd_GC)
