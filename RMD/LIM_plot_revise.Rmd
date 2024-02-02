@@ -1,0 +1,230 @@
+---
+title: "LIM"
+author: "ChuehChenTung"
+date: '2024-01-09'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+knitr::opts_chunk$set(fig.width=8, fig.height=6) 
+```
+
+<font size="4"> **Caption:** The conceptual model plotted with LIM results of GC1 and GS1 processed with the MCMC algorithm.
+
+</font>
+
+```{r}
+rm(list=ls())
+library(patchwork)
+#-- Load the LIM (and limSolve) package 
+library(LIM)
+library(splus2R)
+library(tidyverse)
+#MODEL SETUP####
+#-- Define directory that contains the input file
+DataDir <- "C:/Users/sarah/Downloads/LIM_GPSC_P/review/"
+#GC1####
+load(file="GC1_revise_a.Rdata")
+GC1_LIM<-LIM
+GC1_xs<-xs
+#GS1####
+load(file="GS1_revise_a.Rdata")
+GS1_LIM<-LIM
+GS1_xs<-xs
+
+rescale <- function(x, from, to) {
+  maxx <- max(x)
+  minx <- min(x)
+  out <- (to - from) * (x - minx)
+  out <- out / (maxx - minx)
+  out + from
+}
+
+GC1<-data.frame(flow=GC1_LIM$Unknowns,
+                mean=round(colMeans(GC1_xs$X),3),
+                sd=round(apply(GC1_xs$X, 2, sd),5),
+                station="GC1")
+mGC1_BMU<-mean(GC1_xs$X[,12]+GC1_xs$X[,17])#GC1_BMU
+sGC1_BMU<-sd(GC1_xs$X[,12]+GC1_xs$X[,17])#GC1_BMU
+mGC1_TOU<-mean(GC1_xs$X[,9]+GC1_xs$X[,12]+GC1_xs$X[,17])#GC1_TOU
+sGC1_TOU<-sd(GC1_xs$X[,9]+GC1_xs$X[,12]+GC1_xs$X[,17])#GC1_TOU
+
+GS1<-data.frame(flow=GS1_LIM$Unknowns,
+                mean=round(colMeans(GS1_xs$X),3),
+                sd=round(apply(GS1_xs$X, 2, sd),5),
+                station="GS1")
+
+mGS1_BMU<-mean(GS1_xs$X[,12]+GS1_xs$X[,17])#GS1_BMU
+sGS1_BMU<-sd(GS1_xs$X[,12]+GS1_xs$X[,17])#GS1_BMU
+mGS1_TOU<-mean(GS1_xs$X[,9]+GS1_xs$X[,12]+GS1_xs$X[,17])#GS1_TOU
+sGS1_TOU<-sd(GS1_xs$X[,9]+GS1_xs$X[,12]+GS1_xs$X[,17])#GS1_TOU
+
+
+df<-rbind(GC1,GS1)
+df$arrow=round(rescale(df$mean,1,15),2)
+df
+library(DiagrammeR)
+library(DiagrammeRsvg)
+library(magrittr)
+library(rsvg)
+
+#GC1####
+GC1_graph<-grViz("
+digraph{
+  graph[rankdir=TB bgcolor=transparent nodesep=0.55 ranksep=0.55]
+  
+  { rank=1
+    node [shape=box style=filled fillcolor=lightsteelblue width=0.8 height=0.3]
+    POC_W [label=POC]
+    EXP_S [label=Export]
+    DIC_W [label=DIC]
+    EXP_B [label=Predation]
+    
+    
+  }
+  
+  {
+    rank=2
+    node [style=filled fillcolor=Coral width=0.8 height=0.8 ]
+    DET  [label=Detritus]
+    BAC  [label=Bacteria ]
+    MEI  [label=Meiofauna]
+    MAC  [label=Macrofauna]
+    
+  }  
+  {
+    rank=3
+    node [shape=box style=filled fillcolor=lightsteelblue width=0.8 height=0.3]
+    DOC  [label=DOC]
+    BUR  [label=Burial]
+  }  
+  {
+    # POM input
+    POC_W -> DET [color = tomato fontcolor=midnightblue penwidth=15.00 label=2017.454 fontsize=18]
+    # POM burial
+    DET -> BUR [color = tomato fontcolor=midnightblue penwidth=2.72 label=248.475 fontsize=18]
+    # POM export
+    DET -> EXP_S [color = tomato fontcolor=midnightblue penwidth=12.77 label=1696.628 fontsize=18]
+    # POM to DOM
+    DET -> DOC [color = tomato fontcolor=midnightblue penwidth=1.50 label=72.271 fontsize=18]
+    
+    # BAC loop
+    DOC -> BAC   [color = black  fontcolor=midnightblue	 penwidth=1.18 label=26.326 fontsize=18]
+    BAC -> DOC   [color = black  fontcolor=midnightblue	 penwidth=1.09 label=12.448 fontsize=18]
+    
+    # Interaction
+    # BAC
+    BAC -> MEI   [color = black  fontcolor=midnightblue	 penwidth=1.00 label=0.073 fontsize=18]
+    BAC -> MAC   [color = black  fontcolor=midnightblue	 penwidth=1.00 label=0.007 fontsize=18]
+    BAC -> DIC_W [color = skyblue fontcolor=midnightblue	 penwidth=1.1 label=13.799 fontsize=18]
+    
+    #MEI
+    DET -> MEI   [color = black fontcolor=midnightblue	 penwidth=1.00 label=0.073 fontsize=18]
+    MEI -> MAC   [color = black fontcolor=midnightblue	 penwidth=1.00 label=0.006 fontsize=18]
+    MEI -> DIC_W [color = skyblue fontcolor=midnightblue	 penwidth=1.00 label=0.051 fontsize=18]
+    MEI -> EXP_B   [color = skyblue fontcolor=midnightblue	 penwidth=1.00 label=0.011 fontsize=18]
+    
+    #MAC
+    DET -> MAC   [color = black  fontcolor=midnightblue	 penwidth=1.00 label=0.007 fontsize=18]
+    MAC -> DIC_W [color = skyblue fontcolor=midnightblue	 penwidth=1.00 label=0.004 fontsize=18]
+    MAC -> EXP_B   [color = skyblue fontcolor=midnightblue	 penwidth=1.00 label=0.004 fontsize=18]
+
+    MEI->DET [color = black  fontcolor=midnightblue	 penwidth=1.00 label=0.079 fontsize=18]
+    MAC->DET [color = black  fontcolor=midnightblue	 penwidth=1.00 label=0.011 fontsize=18]
+    
+  }    }
+")
+#GC1_graph%>%
+#  export_svg %>% charToRaw %>% rsvg_png("GC1_graph.png")
+
+#GS1####
+GS1_graph<-grViz("
+digraph{
+  graph[rankdir=TB bgcolor=transparent nodesep=0.55 ranksep=0.55]
+  
+  { rank=1
+    node [shape=box style=filled fillcolor=lightsteelblue width=0.8 height=0.3]
+    POC_W [label=POC]
+    EXP_S [label=Export]
+    DIC_W [label=DIC]
+    EXP_B [label=Predation]
+    
+    
+  }
+  
+  {
+    rank=2
+    node [style=filled fillcolor=Coral width=0.8 height=0.8 ]
+    DET  [label=Detritus]
+    BAC  [label=Bacteria ]
+    MEI  [label=Meiofauna]
+    MAC  [label=Macrofauna]
+    
+  }  
+  {
+    rank=3
+    node [shape=box style=filled fillcolor=lightsteelblue width=0.8 height=0.3]
+    DOC  [label=DOC]
+    BUR  [label=Burial]
+  }  
+  {
+    # POM input
+    POC_W -> DET [color = tomato fontcolor=midnightblue penwidth=1.9 label=130.046 fontsize=18]
+    # POM burial
+    DET -> BUR [color = tomato fontcolor=midnightblue penwidth=1.76 label=108.872 fontsize=18]
+    # POM export
+    DET -> EXP_S [color = tomato fontcolor=midnightblue penwidth=1.06 label=8.596 fontsize=18]
+    # POM to DOM
+    DET -> DOC [color = tomato fontcolor=midnightblue penwidth=1.06 label=8.655 fontsize=18]
+    
+    # BAC loop
+    DOC -> BAC   [color = black  fontcolor=midnightblue penwidth=1.17
+ label=24.607 fontsize=18]
+    BAC -> DOC   [color = black fontcolor=midnightblue penwidth=1.06 label=8.205 fontsize=18]
+    
+    # Interaction
+    # BAC
+    BAC -> MEI   [color = black fontcolor=midnightblue penwidth=1.03 label=4.589 fontsize=18]
+    BAC -> MAC   [color = black fontcolor=midnightblue penwidth=1.00 label=0.173 fontsize=18]
+    BAC -> DIC_W [color = skyblue fontcolor=midnightblue penwidth=1.08 label=11.640 fontsize=18]
+    
+    #MEI
+    DET -> MEI   [color = black fontcolor=midnightblue penwidth=1.03 label=3.762 fontsize=18]
+    MEI -> MAC   [color = black fontcolor=midnightblue penwidth=1.00 label=0.151 fontsize=18]
+    MEI -> DIC_W [color = skyblue fontcolor=midnightblue penwidth=1.02 label=2.854 fontsize=18]
+    MEI -> EXP_B   [color = skyblue fontcolor=midnightblue penwidth=1.01 label=0.802 fontsize=18]
+    
+    #MAC
+    DET -> MAC   [color = black  fontcolor=midnightblue penwidth=1.00 label=0.160 fontsize=18]
+    MAC -> DIC_W [color = skyblue fontcolor=midnightblue penwidth=1.00 label=0.110 fontsize=18]
+    MAC -> EXP_B   [color = skyblue fontcolor=midnightblue penwidth=1.00 label=0.101 fontsize=18]
+
+    MEI->DET [color = black  fontcolor=midnightblue penwidth=1.03 label=4.543 fontsize=18]
+    MAC->DET [color = black  fontcolor=midnightblue penwidth=1.00 label=0.275 fontsize=18]
+    
+  }    }
+")
+#GS1_graph%>%
+#  export_svg %>% charToRaw %>% rsvg_png("GS1_graph.png")
+library(png)
+library(grid)
+library(gridExtra)
+library(ggplotify)
+library(cowplot)
+library(ggplot2)
+GC1 <- readPNG('GC1_rev.png')
+GS1 <- readPNG('GS1_rev.png')
+g<-grid.arrange(rasterGrob(GC1),rasterGrob(GS1),ncol=2)
+p<-as.ggplot(g)+draw_plot_label(label = c("(a) GC1","(b) GS1"),x=c(0.01,0.50),y=c(0.93,0.93))+ theme(panel.background = element_rect(fill = 'white', color = 'white'))
+p
+
+#ggsave('lim_rev.png',p,width=18,height=12,dpi = 300)
+
+CON<-readPNG('CONCEPT.png') 
+g <- rasterGrob(CON, interpolate=TRUE)
+as.ggplot(g)+theme(panel.background = element_rect(fill = 'white', color = 'white'))
+#ggsave('concept_rev.png',g,width=12,height=12,dpi = 300)
+
+```
