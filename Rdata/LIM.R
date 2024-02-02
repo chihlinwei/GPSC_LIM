@@ -6,7 +6,7 @@ library(splus2R)
 #-- Define directory that contains the input file
 DataDir <- "C:/Users/sarah/Downloads/LIM_GPSC_P/review/"
 #-- Read the ascii files
-File<- paste(DataDir,"GC1_revise.input",sep="")  
+File<- paste(DataDir,"GC1.input",sep="")  
 LIM<- Setup(file=File) 
 #Parsimonious####
 # Find the solution range of each flow
@@ -40,7 +40,7 @@ xs <- xsample(E    = LIM$A,
               jmp  = (xranges[,2] - xranges[,1])/jumpsize,
               x0   = x0,
               iter = iter)
-nameoutput <- "GC1_revise.Rdata" #name_iter_size
+nameoutput <- "GC1.Rdata" #name_iter_size
 save(xs, LIM, file=nameoutput)
 
 #check#### 
@@ -112,7 +112,7 @@ rm(list=ls())
 library(LIM)
 library(splus2R)
 DataDir <- "C:/Users/sarah/Downloads/LIM_GPSC_P/review/"
-File<- paste(DataDir,"GC1_revise.input",sep="")  
+File<- paste(DataDir,"GC1.input",sep="")  
 LIM<- Setup(file=File) 
 #Parsimonious####
 # Find the solution range of each flow
@@ -120,7 +120,7 @@ flowSol <- Xranges(LIM)
 # Find the parsimonious solution of each flow
 pars <- Lsei(LIM, parsimonious = TRUE)
 
-load("GC1_revise.Rdata")
+load("GC1.Rdata")
 LA_2<-data.frame(flow=LIM$Unknowns, 
                  mean=format(colMeans(xs$X),scientific = F),
                  sd=format(sqrt(diag(var(xs$X))),scientific = F))
