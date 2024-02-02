@@ -1,0 +1,199 @@
+---
+title: "Secondary Production"
+author: "Tung Chueh Chen"
+date: "2024-02-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+<font size="4"> **Caption:** Figure 5. Fate of secondary production (%) of prokaryotes, meiofauna, and macrofauna in GC1 (a, c, e) and GS1 (b, d, f).
+Absolute production (in ($mg C/m^2$)) is indicated next to the compartment. The possible fates of this secondary production are mortality (MOR), predation by meiofauna (MEI), macrofauna (MAC), maintenance respiration (MRE), and predation by
+megafauna (EXP).
+
+</font>
+
+```{r}
+rm(list=ls())
+rm(list=ls())
+library(patchwork)
+#-- Load the LIM (and limSolve) package 
+library(LIM)
+library(splus2R)
+library(tidyverse)
+#MODEL SETUP####
+#-- Define directory that contains the input file
+DataDir <- "C:/Users/sarah/Downloads/LIM_GPSC_P/review/"
+#GC1####
+load(file="GC1_revise.Rdata")
+GC1_LIM<-LIM
+GC1_xs<-xs
+#GS1####
+load(file="GS1_revise.Rdata")
+GS1_LIM<-LIM
+GS1_xs<-xs
+
+
+GC1<-data.frame(flow=GC1_LIM$Unknowns,
+                mean=colMeans(GC1_xs$X),
+                station="GC1")
+
+GS1<-data.frame(flow=GS1_LIM$Unknowns,
+                mean=colMeans(GS1_xs$X),
+                station="GS1")
+
+#GC1####
+bac<-data.frame(Station=c("GC1","GS1"),
+                BACproduction=c(GC1$mean[5]-GC1$mean[9],GS1$mean[5]-GS1$mean[9]))
+bac$BACtoMOR=c(GC1$mean[6]/bac$BACproduction[1],GS1$mean[6]/bac$BACproduction[2])
+bac$BACtoMEI=c(GC1$mean[7]/bac$BACproduction[1],GS1$mean[7]/bac$BACproduction[2])
+bac$BACtoMAC=c(GC1$mean[8]/bac$BACproduction[1],GS1$mean[8]/bac$BACproduction[2])
+GC1_MEImr<-1.05*0.01*0.69
+GS1_MEImr<-1.09*0.01*46.41
+mei<-data.frame(Station=c("GC1","GS1"),
+                MEIproduction=c(GC1$mean[7]+GC1$mean[10]-GC1$mean[14]-GC1$mean[12]+GC1_MEImr,
+                                GS1$mean[7]+GS1$mean[10]-GS1$mean[14]-GS1$mean[12]+GS1_MEImr))
+mei$MEItoMOR=c(GC1$mean[15]/mei$MEIproduction[1],
+               GS1$mean[15]/mei$MEIproduction[2])
+mei$MEItoMR =c(GC1_MEImr/mei$MEIproduction[1],
+               GS1_MEImr/mei$MEIproduction[2])
+mei$MEItoMAC=c(GC1$mean[11]/mei$MEIproduction[1],
+               GS1$mean[11]/mei$MEIproduction[2])
+mei$MEItoEXP=c(GC1$mean[13]/mei$MEIproduction[1],
+               GS1$mean[13]/mei$MEIproduction[2])
+GC1_MACmr<-1.05*0.01*2.1
+GS1_MACmr<-1.09*0.01*50.03
+mac<-data.frame(Station=c("GC1","GS1"),
+                MACproduction=c(GC1$mean[8]+GC1$mean[11]+GC1$mean[16]-GC1$mean[19]-GC1$mean[17]+GC1_MACmr,
+                                GS1$mean[8]+GS1$mean[11]+GS1$mean[16]-GS1$mean[19]-GS1$mean[17]+GS1_MACmr))
+mac$MACtoMOR=c(GC1$mean[20]/mac$MACproduction[1],
+               GS1$mean[20]/mac$MACproduction[2])
+mac$MACtoMR =c(GC1_MACmr   /mac$MACproduction[1],
+               GS1_MACmr   /mac$MACproduction[2])
+mac$MACtoEXP=c(GC1$mean[18]/mac$MACproduction[1],
+               GS1$mean[18]/mac$MACproduction[2])
+
+library(DiagrammeR)
+library(DiagrammeRsvg)
+library(magrittr)
+library(rsvg)
+
+BAC<-grViz("
+digraph{
+  graph[rankdir=TB bgcolor=transparent]
+  { node [shape=hexagon style=filled fillcolor=Coral]
+    BAC1 [label=BAC]
+    MEI1 [label=MEI]
+    MAC1 [label=MAC]
+  }
+  { node [shape=circle style=filled fillcolor=lightsteelblue]
+    MOR1 [label=MOR]
+    }
+  { BAC1 -> MOR1 [color = black label=99.3 penwidth=10.00]
+    BAC1 -> MEI1 [color = black label=0.6 penwidth=1.00]
+    BAC1 -> MAC1 [color = black label=0.1 penwidth=1.00]
+    }
+{ node [shape=hexagon style=filled fillcolor=Coral]
+    BAC2 [label=BAC]
+    MEI2 [label=MEI]
+    MAC2 [label=MAC]
+    }
+  { node [shape=circle style=filled fillcolor=lightsteelblue]
+    MOR2 [label=MOR]
+  }
+  { BAC2 -> MOR2 [color = black label=63.3 penwidth=6.00]
+    BAC2 -> MEI2 [color = black label=35.4 penwidth=4.00]
+    BAC2 -> MAC2 [color = black label=1.3 penwidth=1.00]
+  }
+    
+}
+")
+MEI<-grViz("
+digraph{
+  graph[rankdir=TB bgcolor=transparent]
+  { node [shape=hexagon style=filled fillcolor=Coral]
+    MEI1 [label=MEI]
+    MAC1 [label=MAC]
+  }
+  { node [shape=circle style=filled fillcolor=lightsteelblue]
+    MOR1 [label=MOR]
+    MRE1  [label=MRE]
+    EXP1 [label=EXP]
+  }
+  { MEI1 -> MOR1 [color = black label=32.6 penwidth=3.20]
+    MEI1 -> MAC1 [color = black label=15.4 penwidth=1.50]
+    MEI1 -> MRE1 [color = black label=20.2 penwidth=2.00]
+    MEI1 -> EXP1 [color = black label=31.8 penwidth=3.20]
+    }    
+    { node [shape=hexagon style=filled fillcolor=Coral]
+    MEI2 [label=MEI]
+    MAC2 [label=MAC]
+  }
+  { node [shape=circle style=filled fillcolor=lightsteelblue]
+    MOR2 [label=MOR]
+    MRE2  [label=MRE]
+    EXP2 [label=EXP]
+  }
+  { MEI2 -> MOR2 [color = black label=33.3 penwidth=3.30]
+    MEI2 -> MAC2 [color = black label=6.9 penwidth=1.00]
+    MEI2 -> MRE2 [color = black label=23.1 penwidth=2.0]
+    MEI2 -> EXP2 [color = black label=36.7 penwidth=3.70]
+    } 
+}
+")
+MAC<-grViz("
+digraph{
+  graph[rankdir=TB bgcolor=transparent ]
+  { node [shape=hexagon style=filled fillcolor=Coral]
+    MAC1 [label=MAC]
+  }
+  { node [shape=circle style=filled fillcolor=lightsteelblue]
+    MOR1 [label=MOR]
+    MRE1  [label=MRE]
+    EXP1 [label=EXP]
+  }
+  { MAC1 -> MOR1 [color = black label=13.6 penwidth=1.30]
+    MAC1 -> MRE1 [color = black label=72.6 penwidth=7.30]
+    MAC1 -> EXP1 [color = black label=13.8 penwidth=1.30]
+    }    
+    { node [shape=hexagon style=filled fillcolor=Coral]
+    MAC2[label=MAC]
+  }
+  { node [shape=circle style=filled fillcolor=lightsteelblue]
+    MOR2 [label=MOR]
+    MRE2 [label=MRE]
+    EXP2 [label=EXP]
+  }
+  { MAC2 -> MOR2 [color = black  label=13.6 penwidth=1.4]
+    MAC2 -> MRE2 [color = black  label=73.0 penwidth=7.3]
+    MAC2 -> EXP2 [color = black  label=13.4 penwidth=1.3]
+    }  
+}
+")
+rm(list=ls())
+library(png)
+library(grid)
+library(gridExtra)
+library(ggplotify)
+library(cowplot)
+library(ggplot2)
+bac <- readPNG('bac.png')
+mei <- readPNG('mei.png')
+mac <- readPNG('mac.png')
+
+g<-grid.arrange(rasterGrob(bac),rasterGrob(mei),rasterGrob(mac),ncol=1)
+p<-as.ggplot(g)+theme(panel.background = element_rect(fill = 'white', color = 'white'))+
+  draw_plot_label(label = c("(a)","(b)","(c)","(d)","(e)","(f)"),
+                                x=c(0.05,0.48,0.05,0.48,0.05,0.48),y=c(1.0,1.0,0.65,0.65,0.35,0.35))+
+  draw_plot_label(size = 8,
+    label = c(12.528,12.967,0.036,2.187,0.030,0.748),
+                  x=c(0.33,0.77,0.33,0.77,0.35,0.8),y=c(0.97,0.97,0.63,0.63,0.3,0.3))
+  
+p
+#ggsave('sec.png',p,width=8,height=7,dpi = 300)
+
+
+```
